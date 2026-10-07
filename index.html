@@ -1,161 +1,139 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Super Runner - Aimed Boss Edition</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Super Runner - Aimed Boss Edition</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-      user-select: none;
-      -webkit-user-select: none;
-      margin: 0;
-      padding: 0;
-    }
+<style>
+* {
+  box-sizing: border-box;
+  user-select: none;
+  -webkit-user-select: none;
+  margin: 0;
+  padding: 0;
+}
 
-    body, html {
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #111;
-      font-family: Arial, sans-serif;
-      touch-action: none;
-    }
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #111;
+  font-family: Arial, sans-serif;
+  touch-action: none;
+}
 
-    #game-container {
-      position: relative;
-      width: 100vw;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      touch-action: none;
-    }
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 
-    canvas {
-      background: #5c94fc;
-      box-shadow: 0 0 20px rgba(0,0,0,0.5);
-      max-width: 100%;
-      max-height: 100%;
-    }
+canvas {
+  background: #5c94fc;
+  box-shadow: 0 0 20px rgba(0,0,0,.5);
+  max-width: 100%;
+  max-height: 100%;
+}
 
-    /* =========================
-       CONTROLES TÁCTILES
-       ========================= */
+#touch-controls {
+  position: absolute;
+  bottom: 20px;
+  left: 0;
+  width: 100%;
+  height: 130px;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 25px;
+  pointer-events: none;
+}
 
-    #touch-controls {
-      position: absolute;
-      bottom: 20px;
-      left: 0;
-      width: 100%;
-      height: 130px;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 25px;
-      pointer-events: none;
-      touch-action: none;
-    }
+.btn-group {
+  display: flex;
+  gap: 12px;
+  pointer-events: auto;
+  align-items: center;
+}
 
-    .btn-group {
-      display: flex;
-      gap: 12px;
-      pointer-events: auto;
-      align-items: center;
-      touch-action: none;
-    }
+.touch-btn {
+  width: 80px;
+  height: 80px;
+  background: rgba(255,255,255,.3);
+  border: 3px solid rgba(255,255,255,.6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: bold;
+  color: white;
+  touch-action: none;
+}
 
-    .touch-btn {
-      width: 80px;
-      height: 80px;
-      background: rgba(255, 255, 255, 0.3);
-      border: 3px solid rgba(255, 255, 255, 0.6);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 28px;
-      font-weight: bold;
-      color: white;
-      touch-action: none;
-      -webkit-tap-highlight-color: transparent;
-    }
+.touch-btn:active {
+  background: rgba(255,255,255,.6);
+  transform: scale(.95);
+}
 
-    .touch-btn:active {
-      background: rgba(255, 255, 255, 0.6);
-      transform: scale(0.95);
-    }
+#btn-jump {
+  width: 100px;
+  height: 100px;
+  background: rgba(255,50,50,.4);
+  font-size: 34px;
+}
 
-    /* SALTO: botón principal */
-    #btn-jump {
-      width: 100px;
-      height: 100px;
-      background: rgba(255, 50, 50, 0.4);
-      border-color: rgba(255, 100, 100, 0.7);
-      font-size: 34px;
-    }
+#btn-shoot {
+  width: 90px;
+  height: 90px;
+  background: rgba(255,165,0,.5);
+}
 
-    /* DISPARO */
-    #btn-shoot {
-      width: 90px;
-      height: 90px;
-      background: rgba(255, 165, 0, 0.5);
-      border-color: rgba(255, 200, 0, 0.8);
-      font-size: 30px;
-    }
-
-    /* CAMBIAR PODER */
-    #btn-switch {
-      width: 70px;
-      height: 70px;
-      background: rgba(155, 89, 182, 0.5);
-      border-color: rgba(189, 195, 199, 0.8);
-      font-size: 20px;
-      display: none;
-    }
-  </style>
+#btn-switch {
+  width: 70px;
+  height: 70px;
+  background: rgba(155,89,182,.5);
+  display: none;
+}
+</style>
 </head>
 
 <body>
 
 <div id="game-container">
 
-  <canvas id="canvas" width="800" height="450"></canvas>
+<canvas id="canvas" width="800" height="450"></canvas>
 
-  <div id="touch-controls">
+<div id="touch-controls">
 
-    <div class="btn-group">
-      <div class="touch-btn" id="btn-left">◀</div>
-      <div class="touch-btn" id="btn-right">▶</div>
-    </div>
-
-    <div class="btn-group">
-      <div class="touch-btn" id="btn-switch">🔄</div>
-      <div class="touch-btn" id="btn-shoot">🔥</div>
-      <div class="touch-btn" id="btn-jump">▲</div>
-    </div>
-
+  <div class="btn-group">
+    <div class="touch-btn" id="btn-left">◀</div>
+    <div class="touch-btn" id="btn-right">▶</div>
   </div>
+
+  <div class="btn-group">
+    <div class="touch-btn" id="btn-switch">🔄</div>
+    <div class="touch-btn" id="btn-shoot">🔥</div>
+    <div class="touch-btn" id="btn-jump">▲</div>
+  </div>
+
+</div>
 </div>
 
 <script>
 
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-  const playerImage = new Image();
-playerImage.src = 'Dylan.png';
-
+const playerImage = new Image();
+playerImage.src = "Dylan.png";
 
 const GAME_WIDTH = 800;
 const GAME_HEIGHT = 450;
+
 const GRAVITY = 0.45;
-
-/* =========================
-   CONTROLES DE JUGABILIDAD
-   ========================= */
-
 const COYOTE_TIME = 120;
 const JUMP_BUFFER_TIME = 120;
 
@@ -165,6 +143,8 @@ let jumpBufferTimer = 0;
 let gameOver = false;
 let gameWon = false;
 let score = 0;
+
+let cameraX = 0;
 
 const keys = {
   left: false,
@@ -176,32 +156,32 @@ const keys = {
 
 
 /* =========================
-   CONTROLES TÁCTILES
+   CONTROLES
    ========================= */
 
 function setupTouchEvents() {
 
-  const bindTouch = (id, key) => {
+  function bindTouch(id, key) {
 
     const el = document.getElementById(id);
 
-    el.addEventListener('pointerdown', (e) => {
+    el.addEventListener("pointerdown", function(e) {
 
       e.preventDefault();
 
       keys[key] = true;
 
-      if (key === 'shoot') {
+      if (key === "shoot") {
         shootProjectile();
       }
 
-      if (key === 'switch') {
+      if (key === "switch") {
         switchPower();
       }
 
     });
 
-    el.addEventListener('pointerup', (e) => {
+    el.addEventListener("pointerup", function(e) {
 
       e.preventDefault();
 
@@ -209,29 +189,19 @@ function setupTouchEvents() {
 
     });
 
-    el.addEventListener('pointercancel', (e) => {
-
-      e.preventDefault();
+    el.addEventListener("pointercancel", function() {
 
       keys[key] = false;
 
     });
 
-    el.addEventListener('pointerleave', (e) => {
+  }
 
-      if (e.buttons === 0) {
-        keys[key] = false;
-      }
-
-    });
-
-  };
-
-  bindTouch('btn-left', 'left');
-  bindTouch('btn-right', 'right');
-  bindTouch('btn-jump', 'up');
-  bindTouch('btn-shoot', 'shoot');
-  bindTouch('btn-switch', 'switch');
+  bindTouch("btn-left", "left");
+  bindTouch("btn-right", "right");
+  bindTouch("btn-jump", "up");
+  bindTouch("btn-shoot", "shoot");
+  bindTouch("btn-switch", "switch");
 }
 
 setupTouchEvents();
@@ -241,52 +211,46 @@ setupTouchEvents();
    TECLADO
    ========================= */
 
-window.addEventListener('keydown', (e) => {
+window.addEventListener("keydown", function(e) {
 
-  if (e.key === 'ArrowLeft' || e.key === 'a') {
+  if (e.key === "ArrowLeft" || e.key === "a") {
     keys.left = true;
   }
 
-  if (e.key === 'ArrowRight' || e.key === 'd') {
+  if (e.key === "ArrowRight" || e.key === "d") {
     keys.right = true;
   }
 
-  if (e.key === 'ArrowUp' || e.key === ' ' || e.key === 'w') {
+  if (e.key === "ArrowUp" || e.key === " " || e.key === "w") {
     keys.up = true;
+    e.preventDefault();
   }
 
-  if (e.key === 'x' || e.key === 'j') {
+  if (e.key === "x" || e.key === "j") {
     shootProjectile();
   }
 
-  if (e.key === 'c' || e.key === 'k') {
+  if (e.key === "c" || e.key === "k") {
     switchPower();
   }
 
 });
 
-window.addEventListener('keyup', (e) => {
+window.addEventListener("keyup", function(e) {
 
-  if (e.key === 'ArrowLeft' || e.key === 'a') {
+  if (e.key === "ArrowLeft" || e.key === "a") {
     keys.left = false;
   }
 
-  if (e.key === 'ArrowRight' || e.key === 'd') {
+  if (e.key === "ArrowRight" || e.key === "d") {
     keys.right = false;
   }
 
-  if (e.key === 'ArrowUp' || e.key === ' ' || e.key === 'w') {
+  if (e.key === "ArrowUp" || e.key === " " || e.key === "w") {
     keys.up = false;
   }
 
 });
-
-
-/* =========================
-   CÁMARA
-   ========================= */
-
-let cameraX = 0;
 
 
 /* =========================
@@ -309,19 +273,18 @@ const player = {
 
   grounded: false,
 
-  power: 'none',
+  power: "none",
   powerTimer: 0,
 
   facingRight: true,
 
-  iceHits: 0,
   slowTimer: 0,
 
   inBossArea: false,
 
-  draw() {
+  draw: function() {
 
-  if (playerImage.complete) {
+    if (!playerImage.complete) return;
 
     ctx.save();
 
@@ -358,9 +321,6 @@ const player = {
 
   }
 
-}
-
-
 };
 
 
@@ -370,21 +330,21 @@ const player = {
 
 const platforms = [
 
-  { x: 0, y: 400, width: 900, height: 50 },
-  { x: 980, y: 400, width: 800, height: 50 },
-  { x: 1800, y: 400, width: 700, height: 50 },
-  { x: 2500, y: 400, width: 800, height: 50 },
+  {x:0,y:400,width:900,height:50},
+  {x:980,y:400,width:800,height:50},
+  {x:1800,y:400,width:700,height:50},
+  {x:2500,y:400,width:800,height:50},
 
-  { x: 300, y: 280, width: 120, height: 20 },
-  { x: 500, y: 200, width: 100, height: 20 },
-  { x: 750, y: 260, width: 100, height: 20 },
+  {x:300,y:280,width:120,height:20},
+  {x:500,y:200,width:100,height:20},
+  {x:750,y:260,width:100,height:20},
 
-  { x: 1150, y: 280, width: 120, height: 20 },
-  { x: 1350, y: 200, width: 100, height: 20 },
-  { x: 1550, y: 260, width: 120, height: 20 },
+  {x:1150,y:280,width:120,height:20},
+  {x:1350,y:200,width:100,height:20},
+  {x:1550,y:260,width:120,height:20},
 
-  { x: 1950, y: 280, width: 180, height: 20 },
-  { x: 2700, y: 260, width: 140, height: 20 }
+  {x:1950,y:280,width:180,height:20},
+  {x:2700,y:260,width:140,height:20}
 
 ];
 
@@ -395,23 +355,17 @@ const platforms = [
 
 const items = [
 
-  { x: 200, y: 360, width: 20, height: 20, type: 'fire', collected: false },
+  {x:200,y:360,width:20,height:20,type:"fire",collected:false},
+  {x:340,y:240,width:15,height:15,type:"coin",collected:false},
+  {x:530,y:160,width:20,height:20,type:"ice",collected:false},
+  {x:780,y:220,width:20,height:20,type:"fire",collected:false},
 
-  { x: 340, y: 240, width: 15, height: 15, type: 'coin', collected: false },
+  {x:1180,y:240,width:20,height:20,type:"ice",collected:false},
+  {x:1380,y:160,width:20,height:20,type:"fire",collected:false},
+  {x:1580,y:220,width:20,height:20,type:"ice",collected:false},
 
-  { x: 530, y: 160, width: 20, height: 20, type: 'ice', collected: false },
-
-  { x: 780, y: 220, width: 20, height: 20, type: 'fire', collected: false },
-
-  { x: 1180, y: 240, width: 20, height: 20, type: 'ice', collected: false },
-
-  { x: 1380, y: 160, width: 20, height: 20, type: 'fire', collected: false },
-
-  { x: 1580, y: 220, width: 20, height: 20, type: 'ice', collected: false },
-
-  { x: 2000, y: 240, width: 20, height: 20, type: 'fire', collected: false },
-
-  { x: 2120, y: 240, width: 20, height: 20, type: 'ice', collected: false }
+  {x:2000,y:240,width:20,height:20,type:"fire",collected:false},
+  {x:2120,y:240,width:20,height:20,type:"ice",collected:false}
 
 ];
 
@@ -423,67 +377,70 @@ const items = [
 const enemies = [
 
   {
-    x: 400,
-    y: 370,
-    width: 30,
-    height: 30,
-    vx: -1.5,
-    type: 'goomba',
-    alive: true
+    x:400,
+    y:370,
+    width:30,
+    height:30,
+    vx:-1.5,
+    vy:0,
+    type:"goomba",
+    alive:true
   },
 
   {
-    x: 1100,
-    y: 360,
-    width: 30,
-    height: 40,
-    vx: 0,
-    type: 'fire_enemy',
-    shootTimer: 0,
-    alive: true
+    x:1100,
+    y:360,
+    width:30,
+    height:40,
+    vx:0,
+    vy:0,
+    type:"fire_enemy",
+    shootTimer:0,
+    alive:true
   },
 
   {
-    x: 1400,
-    y: 360,
-    width: 30,
-    height: 40,
-    vx: 0,
-    type: 'ice_enemy',
-    shootTimer: 0,
-    alive: true
+    x:1400,
+    y:360,
+    width:30,
+    height:40,
+    vx:0,
+    vy:0,
+    type:"ice_enemy",
+    shootTimer:0,
+    alive:true
   },
 
   {
-    x: 1650,
-    y: 350,
-    width: 45,
-    height: 50,
-    vx: 1,
-    vy: 0,
-    type: 'stone_enemy',
-    hp: 84,
-    maxHp: 84,
-    jumpTimer: 0,
-    alive: true,
-    minX: 1500,
-    maxX: 1780
+    x:1650,
+    y:350,
+    width:45,
+    height:50,
+    vx:1,
+    vy:0,
+    type:"stone_enemy",
+    hp:84,
+    maxHp:84,
+    jumpTimer:0,
+    alive:true,
+    minX:1500,
+    maxX:1780
   },
 
   {
-    x: 2050,
-    y: 350,
-    width: 45,
-    height: 50,
-    vx: -1,
-    vy: 0,
-    type: 'stone_enemy',
-    hp: 84,
-    maxHp: 84,
-    jumpTimer: 0,
-    alive: true,
-    minX: 1900,
-    maxX: 2300
+    x:2050,
+    y:350,
+    width:45,
+    height:50,
+    vx:-1,
+    vy:0,
+    type:"stone_enemy",
+    hp:84,
+    maxHp:84,
+    jumpTimer:0,
+    alive:true,
+    minX:1900,
+    maxX:2300
   }
 
 ];
@@ -495,100 +452,100 @@ const enemies = [
 
 const boss = {
 
-  x: 2900,
-  y: 280,
+  x:2900,
+  y:280,
 
-  width: 70,
-  height: 120,
+  width:70,
+  height:120,
 
-  hp: 20,
-  maxHp: 20,
+  hp:20,
+  maxHp:20,
 
-  vx: 2,
+  vx:2,
 
-  shootTimer: 0,
-  slowTimer: 0,
-  stateTimer: 0,
+  shootTimer:0,
+  slowTimer:0,
+  stateTimer:0,
 
-  state: 'base',
+  state:"base",
 
-  alive: true,
+  alive:true,
 
-  draw() {
+  draw:function() {
 
     if (!this.alive) return;
 
-    if (this.state === 'base') {
-      ctx.fillStyle = '#8e44ad';
+    if (this.state === "base") {
+      ctx.fillStyle = "#8e44ad";
     }
 
-    if (this.state === 'fire') {
-      ctx.fillStyle = '#e74c3c';
+    if (this.state === "fire") {
+      ctx.fillStyle = "#e74c3c";
     }
 
-    if (this.state === 'ice') {
-      ctx.fillStyle = '#3498db';
+    if (this.state === "ice") {
+      ctx.fillStyle = "#3498db";
     }
 
     ctx.fillRect(
-      this.x - cameraX,
+      this.x-cameraX,
       this.y,
       this.width,
       this.height
     );
 
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = "#fff";
 
     ctx.fillRect(
-      this.x - cameraX + 10,
-      this.y + 20,
+      this.x-cameraX+10,
+      this.y+20,
       15,
       15
     );
 
     ctx.fillRect(
-      this.x - cameraX + 45,
-      this.y + 20,
+      this.x-cameraX+45,
+      this.y+20,
       15,
       15
     );
 
-    ctx.fillStyle = '#000';
+    ctx.fillStyle = "#000";
 
     ctx.fillRect(
-      this.x - cameraX,
-      this.y - 20,
+      this.x-cameraX,
+      this.y-20,
       this.width,
       10
     );
 
-    ctx.fillStyle = '#2ecc71';
+    ctx.fillStyle = "#2ecc71";
 
     ctx.fillRect(
-      this.x - cameraX,
-      this.y - 20,
-      this.width * (this.hp / this.maxHp),
+      this.x-cameraX,
+      this.y-20,
+      this.width*(this.hp/this.maxHp),
       10
     );
 
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'center';
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 12px Arial";
+    ctx.textAlign = "center";
 
-    let label = 'JEFE: MODO BASE (Fuego / Hielo)';
+    let label = "JEFE: MODO BASE";
 
-    if (this.state === 'fire') {
-      label = 'JEFE: MODO FUEGO (¡Usa HIELO!)';
+    if (this.state === "fire") {
+      label = "JEFE: FUEGO - USA HIELO";
     }
 
-    if (this.state === 'ice') {
-      label = 'JEFE: MODO HIELO (¡Usa FUEGO!)';
+    if (this.state === "ice") {
+      label = "JEFE: HIELO - USA FUEGO";
     }
 
     ctx.fillText(
       label,
-      this.x - cameraX + this.width / 2,
-      this.y - 30
+      this.x-cameraX+this.width/2,
+      this.y-30
     );
 
   }
@@ -613,91 +570,81 @@ function shootAimedEnemyProjectile(
   type
 ) {
 
-  const dx = targetX - sourceX;
-  const dy = targetY - sourceY;
+  const dx = targetX-sourceX;
+  const dy = targetY-sourceY;
 
-  const dist = Math.hypot(dx, dy) || 1;
+  const dist = Math.hypot(dx,dy) || 1;
 
   enemyProjectiles.push({
 
-    x: sourceX,
-    y: sourceY,
+    x:sourceX,
+    y:sourceY,
 
-    width: 12,
-    height: 12,
+    width:12,
+    height:12,
 
-    vx: (dx / dist) * speed,
-    vy: (dy / dist) * speed,
+    vx:(dx/dist)*speed,
+    vy:(dy/dist)*speed,
 
-    type: type
+    type:type
 
   });
 
 }
 
 
-/* =========================
-   CAMBIAR PODER
-   ========================= */
+function shootProjectile() {
+
+  if (player.power === "none") return;
+
+  playerProjectiles.push({
+
+    x:player.facingRight
+      ? player.x+player.width
+      : player.x-10,
+
+    y:player.y+20,
+
+    width:12,
+    height:12,
+
+    vx:player.facingRight ? 8 : -8,
+
+    type:player.power
+
+  });
+
+}
+
 
 function switchPower() {
 
   if (!player.inBossArea) return;
 
   player.power =
-    (player.power === 'fire')
-      ? 'ice'
-      : 'fire';
+    player.power === "fire"
+      ? "ice"
+      : "fire";
 
-  document.getElementById('btn-shoot').innerText =
-    (player.power === 'fire')
-      ? '🔥'
-      : '❄️';
-
-}
-
-
-/* =========================
-   DISPARAR
-   ========================= */
-
-function shootProjectile() {
-
-  if (player.power === 'none') return;
-
-  playerProjectiles.push({
-
-    x: player.facingRight
-      ? player.x + player.width
-      : player.x - 10,
-
-    y: player.y + 15,
-
-    width: 12,
-    height: 12,
-
-    vx: player.facingRight ? 7 : -7,
-
-    type: player.power
-
-  });
+  document.getElementById("btn-shoot").innerText =
+    player.power === "fire"
+      ? "🔥"
+      : "❄️";
 
 }
 
 
 /* =========================
-   COLISIONES
+   COLISIÓN
    ========================= */
 
-function checkCollision(r1, r2) {
+function checkCollision(a,b) {
 
   return (
-
-    r1.x < r2.x + r2.width &&
-    r1.x + r1.width > r2.x &&
-    r1.y < r2.y + r2.height &&
-    r1.y + r1.height > r2.y
-
+    a.x < b.x+b.width &&
+    a.x+a.width > b.x &&
+    a.y < b.y+b.height &&
+    a.y+a.height > b.y
   );
 
 }
@@ -712,94 +659,54 @@ function update() {
   if (gameOver || gameWon) return;
 
 
-  /* -------------------------
-     VELOCIDAD
-     ------------------------- */
+  /* Movimiento */
 
-  let currentSpeed = player.baseSpeed;
+  let speed = player.baseSpeed;
 
   if (player.slowTimer > 0) {
-
     player.slowTimer -= 16;
-
-    currentSpeed =
-      player.baseSpeed * 0.5;
-
+    speed *= .5;
   }
-
-
-  /* -------------------------
-     MOVIMIENTO SUAVE
-     ------------------------- */
 
   if (keys.left) {
 
-    player.vx -= 0.6;
+    player.vx -= .6;
     player.facingRight = false;
 
   }
   else if (keys.right) {
 
-    player.vx += 0.6;
+    player.vx += .6;
     player.facingRight = true;
 
   }
   else {
 
-    player.vx *= 0.8;
+    player.vx *= .8;
 
   }
 
-  player.vx =
-    Math.max(
-      -currentSpeed,
-      Math.min(currentSpeed, player.vx)
-    );
-
+  player.vx = Math.max(
+    -speed,
+    Math.min(speed,player.vx)
+  );
 
   player.x += player.vx;
 
 
-  /* -------------------------
-     LÍMITES DEL JEFE
-     ------------------------- */
+  /* Zona jefe */
 
   if (player.inBossArea) {
 
-    if (player.x < 2500) {
-      player.x = 2500;
-    }
-
-    if (player.x > 3270) {
-      player.x = 3270;
-    }
+    player.x = Math.max(
+      2500,
+      Math.min(3270,player.x)
+    );
 
   }
 
 
-  /* -------------------------
-     COLISIÓN HORIZONTAL
-     ------------------------- */
-
-  platforms.forEach(p => {
-
-    if (checkCollision(player, p)) {
-
-      if (player.vx > 0) {
-        player.x = p.x - player.width;
-      }
-      else if (player.vx < 0) {
-        player.x = p.x + p.width;
-      }
-
-    }
-
-  });
-
-
-  /* -------------------------
-     JUMP BUFFER
-     ------------------------- */
+  /* Salto */
 
   if (keys.up) {
     jumpBufferTimer = JUMP_BUFFER_TIME;
@@ -809,11 +716,6 @@ function update() {
     jumpBufferTimer -= 16;
   }
 
-
-  /* -------------------------
-     COYOTE TIME
-     ------------------------- */
-
   if (player.grounded) {
     coyoteTimer = COYOTE_TIME;
   }
@@ -821,29 +723,21 @@ function update() {
     coyoteTimer -= 16;
   }
 
-
-  /* -------------------------
-     SALTO
-     ------------------------- */
-
   if (
     jumpBufferTimer > 0 &&
     coyoteTimer > 0
   ) {
 
     player.vy = player.jumpPower;
-
     player.grounded = false;
 
-    coyoteTimer = 0;
     jumpBufferTimer = 0;
+    coyoteTimer = 0;
 
   }
 
 
-  /* -------------------------
-     GRAVEDAD
-     ------------------------- */
+  /* Gravedad */
 
   player.vy += GRAVITY;
   player.y += player.vy;
@@ -851,29 +745,22 @@ function update() {
   player.grounded = false;
 
 
-  /* -------------------------
-     COLISIÓN VERTICAL
-     ------------------------- */
+  /* Colisión plataformas */
 
-  platforms.forEach(p => {
+  platforms.forEach(function(p) {
 
-    if (checkCollision(player, p)) {
+    if (checkCollision(player,p)) {
 
       if (player.vy > 0) {
 
-        player.y =
-          p.y - player.height;
-
+        player.y = p.y-player.height;
         player.vy = 0;
-
         player.grounded = true;
 
       }
       else if (player.vy < 0) {
 
-        player.y =
-          p.y + p.height;
-
+        player.y = p.y+p.height;
         player.vy = 0;
 
       }
@@ -883,18 +770,55 @@ function update() {
   });
 
 
-  /* -------------------------
-     CAÍDA
-     ------------------------- */
+  /* Caída */
 
-  if (player.y > GAME_HEIGHT + 100) {
+  if (player.y > GAME_HEIGHT+100) {
     gameOver = true;
   }
 
 
-  /* -------------------------
-     ARENA DEL JEFE
-     ------------------------- */
+  /* Poderes */
+
+  items.forEach(function(item) {
+
+    if (
+      !item.collected &&
+      checkCollision(player,item)
+    ) {
+
+      item.collected = true;
+
+      if (item.type === "coin") {
+        score += 100;
+      }
+
+      if (!player.inBossArea) {
+
+        if (item.type === "fire") {
+
+          player.power = "fire";
+          player.powerTimer = 10000;
+
+        }
+
+        if (item.type === "ice") {
+
+          player.power = "ice";
+          player.powerTimer = 10000;
+
+        }
+
+        document.getElementById("btn-shoot").innerText =
+          player.power === "fire" ? "🔥" : "❄️";
+
+      }
+
+    }
+
+  });
+
+
+  /* Entrar al jefe */
 
   if (
     player.x >= 2500 &&
@@ -902,23 +826,20 @@ function update() {
   ) {
 
     player.inBossArea = true;
-
-    player.power = 'fire';
-
-    document.getElementById(
-      'btn-switch'
-    ).style.display = 'flex';
+    player.power = "fire";
 
     document.getElementById(
-      'btn-shoot'
-    ).innerText = '🔥';
+      "btn-switch"
+    ).style.display = "flex";
+
+    document.getElementById(
+      "btn-shoot"
+    ).innerText = "🔥";
 
   }
 
 
-  /* -------------------------
-     CÁMARA
-     ------------------------- */
+  /* Cámara */
 
   if (player.inBossArea) {
 
@@ -928,106 +849,58 @@ function update() {
   else {
 
     cameraX =
-      player.x - GAME_WIDTH / 3;
+      player.x-GAME_WIDTH/3;
 
-    if (cameraX < 0) {
-      cameraX = 0;
-    }
+    cameraX = Math.max(0,cameraX);
 
   }
 
 
-  /* -------------------------
-     PODER TEMPORAL
-     ------------------------- */
+  /* Poder temporal */
 
   if (
     !player.inBossArea &&
-    player.power !== 'none'
+    player.power !== "none"
   ) {
 
     player.powerTimer -= 16;
 
     if (player.powerTimer <= 0) {
-      player.power = 'none';
+
+      player.power = "none";
+
+      document.getElementById(
+        "btn-shoot"
+      ).innerText = "🔥";
+
     }
 
   }
-
-
-  /* -------------------------
-     ITEMS
-     ------------------------- */
-
-  items.forEach(item => {
-
-    if (
-      !item.collected &&
-      checkCollision(player, item)
-    ) {
-
-      item.collected = true;
-
-      if (item.type === 'coin') {
-        score += 100;
-      }
-
-      if (!player.inBossArea) {
-
-        if (item.type === 'fire') {
-
-          player.power = 'fire';
-          player.powerTimer = 10000;
-
-          document.getElementById(
-            'btn-shoot'
-          ).innerText = '🔥';
-
-        }
-
-        else if (item.type === 'ice') {
-
-          player.power = 'ice';
-          player.powerTimer = 10000;
-
-          document.getElementById(
-            'btn-shoot'
-          ).innerText = '❄️';
-
-        }
-
-      }
-
-    }
-
-  });
 
 
   /* =========================
      ENEMIGOS
      ========================= */
 
-  enemies.forEach(e => {
+  enemies.forEach(function(e) {
 
     if (!e.alive) return;
 
 
-    if (e.type === 'goomba') {
+    if (e.type === "goomba") {
 
       e.x += e.vx;
 
-      if (
-        e.x < 300 ||
-        e.x > 800
-      ) {
+      if (e.x < 300 || e.x > 800) {
         e.vx *= -1;
       }
 
     }
 
 
-    else if (
-      e.type === 'fire_enemy'
+    if (
+      e.type === "fire_enemy" ||
+      e.type === "ice_enemy"
     ) {
 
       e.shootTimer += 16;
@@ -1036,11 +909,13 @@ function update() {
 
         shootAimedEnemyProjectile(
           e.x,
-          e.y + 10,
-          player.x + player.width / 2,
-          player.y + player.height / 2,
+          e.y+10,
+          player.x+player.width/2,
+          player.y+player.height/2,
           3.5,
-          'fire'
+          e.type === "fire_enemy"
+            ? "fire"
+            : "ice"
         );
 
         e.shootTimer = 0;
@@ -1050,33 +925,7 @@ function update() {
     }
 
 
-    else if (
-      e.type === 'ice_enemy'
-    ) {
-
-      e.shootTimer += 16;
-
-      if (e.shootTimer >= 2500) {
-
-        shootAimedEnemyProjectile(
-          e.x,
-          e.y + 10,
-          player.x + player.width / 2,
-          player.y + player.height / 2,
-          3.5,
-          'ice'
-        );
-
-        e.shootTimer = 0;
-
-      }
-
-    }
-
-
-    else if (
-      e.type === 'stone_enemy'
-    ) {
+    if (e.type === "stone_enemy") {
 
       e.x += e.vx;
 
@@ -1099,16 +948,13 @@ function update() {
       e.vy += GRAVITY;
       e.y += e.vy;
 
+      platforms.forEach(function(p) {
 
-      platforms.forEach(p => {
-
-        if (checkCollision(e, p)) {
+        if (checkCollision(e,p)) {
 
           if (e.vy > 0) {
 
-            e.y =
-              p.y - e.height;
-
+            e.y = p.y-e.height;
             e.vy = 0;
 
           }
@@ -1120,29 +966,22 @@ function update() {
     }
 
 
-    /* -------------------------
-       COLISIÓN JUGADOR-ENEMIGO
-       ------------------------- */
-
-    if (checkCollision(player, e)) {
+    if (checkCollision(player,e)) {
 
       if (
         player.vy > 0 &&
-        player.y + player.height - player.vy
-        <= e.y + 12
+        player.y+player.height-player.vy <= e.y+12
       ) {
 
         player.vy = -8;
 
-        if (e.type === 'stone_enemy') {
+        if (e.type === "stone_enemy") {
 
           e.hp -= 12;
 
           if (e.hp <= 0) {
-
             e.alive = false;
             score += 400;
-
           }
 
         }
@@ -1166,23 +1005,153 @@ function update() {
 
 
   /* =========================
+     PROYECTILES DEL JUGADOR
+     ========================= */
+
+  for (
+    let i=playerProjectiles.length-1;
+    i>=0;
+    i--
+  ) {
+
+    const p = playerProjectiles[i];
+
+    p.x += p.vx;
+
+    let remove = false;
+
+
+    enemies.forEach(function(e) {
+
+      if (
+        e.alive &&
+        checkCollision(p,e)
+      ) {
+
+        if (
+          e.type === "stone_enemy"
+        ) {
+
+          e.hp -= 20;
+
+          if (e.hp <= 0) {
+            e.alive = false;
+            score += 400;
+          }
+
+        }
+        else {
+
+          e.alive = false;
+          score += 200;
+
+        }
+
+        remove = true;
+
+      }
+
+    });
+
+
+    if (
+      boss.alive &&
+      checkCollision(p,boss)
+    ) {
+
+      if (
+        (p.type === "fire" && boss.state !== "fire") ||
+        (p.type === "ice" && boss.state !== "ice")
+      ) {
+
+        boss.hp--;
+
+        if (boss.hp <= 0) {
+
+          boss.alive = false;
+          gameWon = true;
+
+        }
+
+      }
+
+      remove = true;
+
+    }
+
+
+    if (
+      p.x < cameraX-100 ||
+      p.x > cameraX+GAME_WIDTH+100
+    ) {
+      remove = true;
+    }
+
+
+    if (remove) {
+      playerProjectiles.splice(i,1);
+    }
+
+  }
+
+
+  /* =========================
+     PROYECTILES ENEMIGOS
+     ========================= */
+
+  for (
+    let i=enemyProjectiles.length-1;
+    i>=0;
+    i--
+  ) {
+
+    const p = enemyProjectiles[i];
+
+    p.x += p.vx;
+    p.y += p.vy;
+
+    if (checkCollision(player,p)) {
+
+      if (p.type === "ice") {
+        player.slowTimer = 3000;
+      }
+      else {
+        gameOver = true;
+      }
+
+      enemyProjectiles.splice(i,1);
+      continue;
+
+    }
+
+    if (
+      p.x < cameraX-200 ||
+      p.x > cameraX+GAME_WIDTH+200 ||
+      p.y < -200 ||
+      p.y > GAME_HEIGHT+200
+    ) {
+
+      enemyProjectiles.splice(i,1);
+
+    }
+
+  }
+
+
+  /* =========================
      JEFE
      ========================= */
 
   if (boss.alive) {
 
-    let bossCurrentVx = boss.vx;
+    let bossSpeed = boss.vx;
 
     if (boss.slowTimer > 0) {
-
       boss.slowTimer -= 16;
-
-      bossCurrentVx =
-        boss.vx * 0.4;
-
+      bossSpeed *= .4;
     }
 
-    boss.x += bossCurrentVx;
+    boss.x += bossSpeed;
 
     if (
       boss.x < 2550 ||
@@ -1191,21 +1160,20 @@ function update() {
       boss.vx *= -1;
     }
 
-
     boss.stateTimer += 16;
 
     if (boss.stateTimer >= 5000) {
 
       const states = [
-        'base',
-        'fire',
-        'ice'
+        "base",
+        "fire",
+        "ice"
       ];
 
       boss.state =
         states[
           Math.floor(
-            Math.random() * states.length
+            Math.random()*states.length
           )
         ];
 
@@ -1213,47 +1181,251 @@ function update() {
 
     }
 
-
     boss.shootTimer += 16;
 
     if (boss.shootTimer >= 1800) {
 
       shootAimedEnemyProjectile(
-        boss.x + boss.width / 2,
-        boss.y + 40,
-        player.x + player.width / 2,
-        player.y + player.height / 2,
+        boss.x+boss.width/2,
+        boss.y+40,
+        player.x+player.width/2,
+        player.y+player.height/2,
         4.5,
-        'boss'
+        "boss"
       );
 
       boss.shootTimer = 0;
 
     }
 
-
-    if (checkCollision(player, boss)) {
+    if (checkCollision(player,boss)) {
       gameOver = true;
     }
 
   }
 
+}
 
-   /* JUGADOR */
+
+/* =========================
+   DIBUJAR
+   ========================= */
+
+function draw() {
+
+  ctx.clearRect(
+    0,
+    0,
+    GAME_WIDTH,
+    GAME_HEIGHT
+  );
+
+
+  /* Fondo */
+
+  ctx.fillStyle = "#5c94fc";
+
+  ctx.fillRect(
+    0,
+    0,
+    GAME_WIDTH,
+    GAME_HEIGHT
+  );
+
+
+  /* Nubes */
+
+  ctx.fillStyle = "rgba(255,255,255,.7)";
+
+  for (let i=0;i<8;i++) {
+
+    const x =
+      (i*500-cameraX*.2)%4000;
+
+    ctx.beginPath();
+
+    ctx.arc(
+      x,
+      80+(i%3)*35,
+      25,
+      0,
+      Math.PI*2
+    );
+
+    ctx.arc(
+      x+30,
+      80+(i%3)*35,
+      35,
+      0,
+      Math.PI*2
+    );
+
+    ctx.arc(
+      x+65,
+      80+(i%3)*35,
+      25,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+  }
+
+
+  /* Plataformas */
+
+  platforms.forEach(function(p) {
+
+    ctx.fillStyle = "#8b4513";
+
+    ctx.fillRect(
+      p.x-cameraX,
+      p.y,
+      p.width,
+      p.height
+    );
+
+    ctx.fillStyle = "#2ecc71";
+
+    ctx.fillRect(
+      p.x-cameraX,
+      p.y,
+      p.width,
+      8
+    );
+
+  });
+
+
+  /* Items */
+
+  items.forEach(function(item) {
+
+    if (item.collected) return;
+
+    if (item.type === "fire") {
+      ctx.fillStyle = "#ff6600";
+    }
+
+    if (item.type === "ice") {
+      ctx.fillStyle = "#00ccff";
+    }
+
+    if (item.type === "coin") {
+      ctx.fillStyle = "#ffd700";
+    }
+
+    ctx.beginPath();
+
+    ctx.arc(
+      item.x-cameraX+item.width/2,
+      item.y+item.height/2,
+      item.width/2,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+  });
+
+
+  /* Enemigos */
+
+  enemies.forEach(function(e) {
+
+    if (!e.alive) return;
+
+    if (e.type === "goomba") {
+      ctx.fillStyle = "#8b4513";
+    }
+    else if (e.type === "fire_enemy") {
+      ctx.fillStyle = "#e74c3c";
+    }
+    else if (e.type === "ice_enemy") {
+      ctx.fillStyle = "#3498db";
+    }
+    else {
+      ctx.fillStyle = "#555";
+    }
+
+    ctx.fillRect(
+      e.x-cameraX,
+      e.y,
+      e.width,
+      e.height
+    );
+
+  });
+
+
+  /* Proyectiles jugador */
+
+  playerProjectiles.forEach(function(p) {
+
+    ctx.fillStyle =
+      p.type === "fire"
+        ? "#ff4500"
+        : "#00ffff";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x-cameraX,
+      p.y,
+      7,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+  });
+
+
+  /* Proyectiles enemigos */
+
+  enemyProjectiles.forEach(function(p) {
+
+    ctx.fillStyle =
+      p.type === "ice"
+        ? "#00ffff"
+        : "#ff2222";
+
+    ctx.beginPath();
+
+    ctx.arc(
+      p.x-cameraX,
+      p.y,
+      7,
+      0,
+      Math.PI*2
+    );
+
+    ctx.fill();
+
+  });
+
+
+  /* Jefe */
+
+  boss.draw();
+
+
+  /* Jugador */
 
   player.draw();
 
 
-  /* =========================
-     INTERFAZ
-     ========================= */
+  /* Interfaz */
 
-  ctx.fillStyle = '#fff';
-  ctx.font = 'bold 16px Arial';
-  ctx.textAlign = 'left';
+  ctx.textAlign = "left";
+  ctx.font = "bold 16px Arial";
+  ctx.fillStyle = "#fff";
 
   ctx.fillText(
-    `Puntos: ${score}`,
+    "Puntos: "+score,
     20,
     30
   );
@@ -1261,20 +1433,27 @@ function update() {
 
   if (
     !player.inBossArea &&
-    player.power !== 'none'
+    player.power !== "none"
   ) {
 
     ctx.fillText(
-      `Poder: ${player.power.toUpperCase()} (${Math.ceil(player.powerTimer / 1000)}s)`,
+      "Poder: "+
+      player.power.toUpperCase()+
+      " ("+
+      Math.ceil(player.powerTimer/1000)+
+      "s)",
       20,
       55
     );
 
   }
-  else if (player.inBossArea) {
+
+  if (player.inBossArea) {
 
     ctx.fillText(
-      `Poder Permanente: ${player.power.toUpperCase()} (Cambia con 🔄 / C)`,
+      "Poder: "+
+      player.power.toUpperCase()+
+      " | 🔄 para cambiar",
       20,
       55
     );
@@ -1282,25 +1461,11 @@ function update() {
   }
 
 
-  if (player.slowTimer > 0) {
-
-    ctx.fillStyle = '#3498db';
-
-    ctx.fillText(
-      `¡RALENTIZADO!`,
-      20,
-      80
-    );
-
-  }
-
-
-  /* GAME OVER */
+  /* Game Over */
 
   if (gameOver) {
 
-    ctx.fillStyle =
-      'rgba(0,0,0,0.8)';
+    ctx.fillStyle = "rgba(0,0,0,.8)";
 
     ctx.fillRect(
       0,
@@ -1309,39 +1474,36 @@ function update() {
       GAME_HEIGHT
     );
 
+    ctx.fillStyle = "#ff4444";
 
-    ctx.fillStyle = '#ff4444';
+    ctx.font = "bold 40px Arial";
 
-    ctx.font = 'bold 40px Arial';
-
-    ctx.textAlign = 'center';
-
-ctx.fillText(
-      '¡HAS PERDIDO!',
-      GAME_WIDTH / 2,
-      GAME_HEIGHT / 2
-    );
-
-
-    ctx.font = '20px Arial';
-
-    ctx.fillStyle = '#fff';
+    ctx.textAlign = "center";
 
     ctx.fillText(
-      'Toca la pantalla para reiniciar',
-      GAME_WIDTH / 2,
-      GAME_HEIGHT / 2 + 50
+      "¡HAS PERDIDO!",
+      GAME_WIDTH/2,
+      GAME_HEIGHT/2
+    );
+
+    ctx.font = "20px Arial";
+
+    ctx.fillStyle = "#fff";
+
+    ctx.fillText(
+      "Toca la pantalla para reiniciar",
+      GAME_WIDTH/2,
+      GAME_HEIGHT/2+50
     );
 
   }
 
 
-  /* VICTORIA */
+  /* Victoria */
 
   if (gameWon) {
 
-    ctx.fillStyle =
-      'rgba(0,0,0,0.8)';
+    ctx.fillStyle = "rgba(0,0,0,.8)";
 
     ctx.fillRect(
       0,
@@ -1350,28 +1512,26 @@ ctx.fillText(
       GAME_HEIGHT
     );
 
+    ctx.fillStyle = "#2ecc71";
 
-    ctx.fillStyle = '#2ecc71';
+    ctx.font = "bold 40px Arial";
 
-    ctx.font = 'bold 40px Arial';
-
-    ctx.textAlign = 'center';
+    ctx.textAlign = "center";
 
     ctx.fillText(
-      '¡VICTORIA TOTAL!',
-      GAME_WIDTH / 2,
-      GAME_HEIGHT / 2
+      "¡VICTORIA TOTAL!",
+      GAME_WIDTH/2,
+      GAME_HEIGHT/2
     );
 
+    ctx.font = "20px Arial";
 
-    ctx.font = '20px Arial';
-
-    ctx.fillStyle = '#fff';
+    ctx.fillStyle = "#fff";
 
     ctx.fillText(
-      `Puntuación final: ${score}`,
-      GAME_WIDTH / 2,
-      GAME_HEIGHT / 2 + 50
+      "Puntuación final: "+score,
+      GAME_WIDTH/2,
+      GAME_HEIGHT/2+50
     );
 
   }
@@ -1385,20 +1545,11 @@ ctx.fillText(
 
 function resetGame() {
 
-  if (!gameOver && !gameWon) return;
-
   gameOver = false;
   gameWon = false;
 
   score = 0;
-
   cameraX = 0;
-
-  coyoteTimer = 0;
-  jumpBufferTimer = 0;
-
-
-  /* Jugador */
 
   player.x = 50;
   player.y = 300;
@@ -1408,60 +1559,42 @@ function resetGame() {
 
   player.grounded = false;
 
-  player.power = 'none';
+  player.power = "none";
   player.powerTimer = 0;
 
   player.facingRight = true;
 
-  player.iceHits = 0;
   player.slowTimer = 0;
-
   player.inBossArea = false;
-
-
-  /* Jefe */
 
   boss.x = 2900;
   boss.y = 280;
-
   boss.hp = boss.maxHp;
-
   boss.vx = 2;
-
   boss.shootTimer = 0;
   boss.slowTimer = 0;
   boss.stateTimer = 0;
-
-  boss.state = 'base';
+  boss.state = "base";
   boss.alive = true;
-
-
-  /* Proyectiles */
 
   playerProjectiles.length = 0;
   enemyProjectiles.length = 0;
 
-
-  /* Items */
-
-  items.forEach(item => {
+  items.forEach(function(item) {
     item.collected = false;
   });
-
-
-  /* Enemigos */
 
   enemies[0].x = 400;
   enemies[0].vx = -1.5;
   enemies[0].alive = true;
 
   enemies[1].x = 1100;
-  enemies[1].shootTimer = 0;
   enemies[1].alive = true;
+  enemies[1].shootTimer = 0;
 
   enemies[2].x = 1400;
-  enemies[2].shootTimer = 0;
   enemies[2].alive = true;
+  enemies[2].shootTimer = 0;
 
   enemies[3].x = 1650;
   enemies[3].y = 350;
@@ -1479,39 +1612,30 @@ function resetGame() {
   enemies[4].jumpTimer = 0;
   enemies[4].alive = true;
 
-
-  /* Botón de cambiar poder */
+  document.getElementById(
+    "btn-switch"
+  ).style.display = "none";
 
   document.getElementById(
-    'btn-switch'
-  ).style.display = 'none';
-
-  document.getElementById(
-    'btn-shoot'
-  ).innerText = '🔥';
+    "btn-shoot"
+  ).innerText = "🔥";
 
 }
 
 
 /* =========================
-   REINICIO AL TOCAR
+   REINICIAR AL TOCAR
    ========================= */
 
 window.addEventListener(
-  'pointerdown',
-  (e) => {
+  "pointerdown",
+  function(e) {
 
-    if (
-      gameOver ||
-      gameWon
-    ) {
-
-      /* No reiniciar si estamos
-         pulsando un botón */
+    if (gameOver || gameWon) {
 
       if (
         e.target.classList &&
-        e.target.classList.contains('touch-btn')
+        e.target.classList.contains("touch-btn")
       ) {
         return;
       }
@@ -1534,9 +1658,7 @@ function gameLoop() {
 
   draw();
 
-  requestAnimationFrame(
-    gameLoop
-  );
+  requestAnimationFrame(gameLoop);
 
 }
 
@@ -1546,5 +1668,3 @@ gameLoop();
 
 </body>
 </html>
-
-
