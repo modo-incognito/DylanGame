@@ -1299,4 +1299,252 @@ function update() {
 
   if (gameOver) {
 
-    ctx.fillStyl
+    ctx.fillStyle =
+      'rgba(0,0,0,0.8)';
+
+    ctx.fillRect(
+      0,
+      0,
+      GAME_WIDTH,
+      GAME_HEIGHT
+    );
+
+
+    ctx.fillStyle = '#ff4444';
+
+    ctx.font = 'bold 40px Arial';
+
+    ctx.textAlign = 'center';
+
+ctx.fillText(
+      '¡HAS PERDIDO!',
+      GAME_WIDTH / 2,
+      GAME_HEIGHT / 2
+    );
+
+
+    ctx.font = '20px Arial';
+
+    ctx.fillStyle = '#fff';
+
+    ctx.fillText(
+      'Toca la pantalla para reiniciar',
+      GAME_WIDTH / 2,
+      GAME_HEIGHT / 2 + 50
+    );
+
+  }
+
+
+  /* VICTORIA */
+
+  if (gameWon) {
+
+    ctx.fillStyle =
+      'rgba(0,0,0,0.8)';
+
+    ctx.fillRect(
+      0,
+      0,
+      GAME_WIDTH,
+      GAME_HEIGHT
+    );
+
+
+    ctx.fillStyle = '#2ecc71';
+
+    ctx.font = 'bold 40px Arial';
+
+    ctx.textAlign = 'center';
+
+    ctx.fillText(
+      '¡VICTORIA TOTAL!',
+      GAME_WIDTH / 2,
+      GAME_HEIGHT / 2
+    );
+
+
+    ctx.font = '20px Arial';
+
+    ctx.fillStyle = '#fff';
+
+    ctx.fillText(
+      `Puntuación final: ${score}`,
+      GAME_WIDTH / 2,
+      GAME_HEIGHT / 2 + 50
+    );
+
+  }
+
+}
+
+
+/* =========================
+   REINICIAR
+   ========================= */
+
+function resetGame() {
+
+  if (!gameOver && !gameWon) return;
+
+  gameOver = false;
+  gameWon = false;
+
+  score = 0;
+
+  cameraX = 0;
+
+  coyoteTimer = 0;
+  jumpBufferTimer = 0;
+
+
+  /* Jugador */
+
+  player.x = 50;
+  player.y = 300;
+
+  player.vx = 0;
+  player.vy = 0;
+
+  player.grounded = false;
+
+  player.power = 'none';
+  player.powerTimer = 0;
+
+  player.facingRight = true;
+
+  player.iceHits = 0;
+  player.slowTimer = 0;
+
+  player.inBossArea = false;
+
+
+  /* Jefe */
+
+  boss.x = 2900;
+  boss.y = 280;
+
+  boss.hp = boss.maxHp;
+
+  boss.vx = 2;
+
+  boss.shootTimer = 0;
+  boss.slowTimer = 0;
+  boss.stateTimer = 0;
+
+  boss.state = 'base';
+  boss.alive = true;
+
+
+  /* Proyectiles */
+
+  playerProjectiles.length = 0;
+  enemyProjectiles.length = 0;
+
+
+  /* Items */
+
+  items.forEach(item => {
+    item.collected = false;
+  });
+
+
+  /* Enemigos */
+
+  enemies[0].x = 400;
+  enemies[0].vx = -1.5;
+  enemies[0].alive = true;
+
+  enemies[1].x = 1100;
+  enemies[1].shootTimer = 0;
+  enemies[1].alive = true;
+
+  enemies[2].x = 1400;
+  enemies[2].shootTimer = 0;
+  enemies[2].alive = true;
+
+  enemies[3].x = 1650;
+  enemies[3].y = 350;
+  enemies[3].vx = 1;
+  enemies[3].vy = 0;
+  enemies[3].hp = 84;
+  enemies[3].jumpTimer = 0;
+  enemies[3].alive = true;
+
+  enemies[4].x = 2050;
+  enemies[4].y = 350;
+  enemies[4].vx = -1;
+  enemies[4].vy = 0;
+  enemies[4].hp = 84;
+  enemies[4].jumpTimer = 0;
+  enemies[4].alive = true;
+
+
+  /* Botón de cambiar poder */
+
+  document.getElementById(
+    'btn-switch'
+  ).style.display = 'none';
+
+  document.getElementById(
+    'btn-shoot'
+  ).innerText = '🔥';
+
+}
+
+
+/* =========================
+   REINICIO AL TOCAR
+   ========================= */
+
+window.addEventListener(
+  'pointerdown',
+  (e) => {
+
+    if (
+      gameOver ||
+      gameWon
+    ) {
+
+      /* No reiniciar si estamos
+         pulsando un botón */
+
+      if (
+        e.target.classList &&
+        e.target.classList.contains('touch-btn')
+      ) {
+        return;
+      }
+
+      resetGame();
+
+    }
+
+  }
+);
+
+
+/* =========================
+   GAME LOOP
+   ========================= */
+
+function gameLoop() {
+
+  update();
+
+  draw();
+
+  requestAnimationFrame(
+    gameLoop
+  );
+
+}
+
+gameLoop();
+
+</script>
+
+</body>
+</html>
+
+
